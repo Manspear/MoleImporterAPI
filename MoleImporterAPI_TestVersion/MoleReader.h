@@ -114,7 +114,10 @@ public :
 
 private:
 
-	
+	int prevMeshes;
+	int prevCameras;
+	int prevLights;
+	int prevMaterials;
 
 	//Vectors holding all of the data.
 	std::vector<read_sMesh> gRead_meshList;
