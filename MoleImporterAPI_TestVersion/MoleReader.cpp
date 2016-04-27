@@ -77,15 +77,14 @@ void MoleReader::readFromBinary(const char* filePath)
 			cout << "Vertex vector: " << endl;
 
 			cout << "mlist: " << endl;
-			gRead_mList[currMeshIndex].vList.resize(gRead_meshList[currMeshIndex].vertexCount);
+
 			cout << "\t";
 			cout << gRead_mList[currMeshIndex].vList.data() << endl;
 
 			cout << "\t";
 			cout << "Allocated memory for " << gRead_meshList[currMeshIndex].vertexCount << " vertices" << endl;
-
+			
 			gRead_mList[currMeshIndex].vList.resize(gRead_meshList[currMeshIndex].vertexCount);
-
 			infile.read((char*)gRead_mList[currMeshIndex].vList.data(), sizeof(read_sVertex) * gRead_meshList[currMeshIndex].vertexCount);//				Skriver ut alla vertices i får vArray, pos, nor, rgba 100 gånger. Och minnet 100 Vertices tar upp.
 
 																												//cout << "SkelAnimVert vector: NULL" << endl;																									//cout << "Joint vector: NULL" << endl;
