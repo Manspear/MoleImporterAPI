@@ -59,7 +59,7 @@ struct  read_sSkelAnimVertex
 
 struct  read_sMaterial
 {
-	const char* materialName;
+	char materialName[256];
 
 	float ambientColor[3];
 	float diffuseColor[3];
@@ -96,16 +96,18 @@ struct  read_sCamera
 	float farPlane;
 };
 
+//Vectors holding all of the data.
+
 static std::vector<read_sCamera> gRead_cameraList;
 static std::vector<read_sLight> gRead_lightList;
 static std::vector< read_sMaterial> gRead_materialList;
 static std::vector<read_m> gRead_mList;
 static std::vector<read_sMesh> gRead_meshList;
-//Struct objects
 
+//Struct objects
 read_sMainHeader gRead_mainHeader;
-read_sVertex gRead_vertex;
-read_sMaterial gRead_materialData;
-read_sLight gRead_lightData;
-read_sCamera gRead_camData;
+//read_sVertex gRead_vertex;
+//read_sMaterial gRead_materialData;
+//read_sLight gRead_lightData;
+//read_sCamera gRead_camData;
 

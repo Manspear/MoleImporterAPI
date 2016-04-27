@@ -1,16 +1,16 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
-#include "ReadHeaderData.h"
-#include "BinaryReader.h"
+//#include "ReadHeaderData.h"
+#include "MoleReader.h"
 
 using namespace std;
 
-void BinaryReader::readFromBinary(const char* filePath)
+void MoleReader::readFromBinary(const char* filePath)
 {
 
 	//Read from binary
-	std::ifstream infile("testBin.bin", std::ifstream::binary);//		Öppnar filen vi nyss skapade men ska nu läsa istället
+	std::ifstream infile(filePath, std::ifstream::binary);//		Öppnar filen vi nyss skapade men ska nu läsa istället
 
 	cout << ">>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<" << "\n" << "\n" << endl;
 	cout << "Binary Reader" << endl;
@@ -45,21 +45,21 @@ void BinaryReader::readFromBinary(const char* filePath)
 
 			cout << "\t";
 			cout << "xyz: ";
-			cout << gRead_meshList[i].translate[0];
-			cout << gRead_meshList[i].translate[1];
-			cout << gRead_meshList[i].translate[2] << endl;
+			cout << gRead_meshList[i].translate[0] << " ";
+			cout << gRead_meshList[i].translate[1] << " ";
+			cout << gRead_meshList[i].translate[2] << " " << endl;
 
 			cout << "\t";
 			cout << "rot: ";
-			cout << gRead_meshList[i].rotation[0];
-			cout << gRead_meshList[i].rotation[1];
-			cout << gRead_meshList[i].rotation[2] << endl;
+			cout << gRead_meshList[i].rotation[0] << " ";
+			cout << gRead_meshList[i].rotation[1] << " ";
+			cout << gRead_meshList[i].rotation[2] << " " << endl;
 
 			cout << "\t";
 			cout << "scale: ";
-			cout << gRead_meshList[i].scale[0];
-			cout << gRead_meshList[i].scale[1];
-			cout << gRead_meshList[i].scale[2] << endl;
+			cout << gRead_meshList[i].scale[0] << " ";
+			cout << gRead_meshList[i].scale[1] << " ";
+			cout << gRead_meshList[i].scale[2] << " " << endl;
 
 			cout << "\t";
 			cout << "Vertex Count: ";
@@ -233,8 +233,51 @@ void BinaryReader::readFromBinary(const char* filePath)
 			cout << "______________________" << endl;
 		}
 	}
+	//contains the meshes
+	gRead_meshList;
+	//Contains the vertices for each mesh
+	gRead_mList;
+	//contains the cameras
+	gRead_cameraList;
+	//contains the lights
+	gRead_lightList;
+	//contains the materials
+	gRead_materialList;
 
 	infile.close();
+}
+
+const std::vector<MoleReader::read_sMesh>* MoleReader::getMeshList()
+{
+	return &gRead_meshList;
+}
+
+const std::vector<MoleReader::read_m>* MoleReader::getVertexList()
+{
+	return &gRead_mList;
+}
+
+const std::vector<MoleReader::read_sMaterial>* MoleReader::getMaterialList()
+{
+	return &gRead_materialList;
+}
+
+const std::vector<MoleReader::read_sCamera>* MoleReader::getCameraList()
+{
+	return &gRead_cameraList;
+}
+
+const std::vector<MoleReader::read_sLight>* MoleReader::getLightList()
+{
+	return &gRead_lightList;
+}
+
+MoleReader::MoleReader()
+{
+}
+
+MoleReader::~MoleReader()
+{
 }
 
 //cout << "______________________" << endl;

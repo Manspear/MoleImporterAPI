@@ -18,24 +18,18 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mole.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BinaryReader.cpp">
+    <ClCompile Include="MoleReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Mole.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BinaryReader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ReadHeaderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="junk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoleReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
