@@ -1,6 +1,14 @@
 #pragma once
 #include <vector>
 
+/**
+Things left to be implemented:
+1. Parenting between meshes, and joints and meshes.
+	Neccessary for having meshes with multiple pieces, like separate 
+	pieces of body armor, or weapons being stuck on joints.
+2. Joints, and animations.
+**/
+
 class MoleReader {
 public :
 	struct read_sMainHeader
@@ -36,7 +44,6 @@ public :
 		unsigned int vertexCount;
 		//unsigned int skelAnimVertexCount;
 		//unsigned int jointCount;
-
 	};
 
 	/**
@@ -105,12 +112,8 @@ public :
 	const std::vector<read_sCamera>* getCameraList();
 	const std::vector<read_sLight>* getLightList();
 
-
-
 	MoleReader();
 	~MoleReader();
-
-	
 
 private:
 
@@ -120,15 +123,14 @@ private:
 	int prevMaterials;
 
 	//Vectors holding all of the data.
-	std::vector<read_sMesh> gRead_meshList;
-	std::vector<read_sCamera> gRead_cameraList;
-	std::vector<read_sLight> gRead_lightList;
-	std::vector< read_sMaterial> gRead_materialList;
-	std::vector<read_m> gRead_mList;
+	std::vector<read_sMesh> pmRead_meshList;
+	std::vector<read_sCamera> pmRead_cameraList;
+	std::vector<read_sLight> pmRead_lightList;
+	std::vector< read_sMaterial> pmRead_materialList;
+	std::vector<read_m> pmRead_mList;
 	
-
 	//Struct objects
-	read_sMainHeader gRead_mainHeader;
+	read_sMainHeader pmRead_mainHeader;
 	//read_sVertex gRead_vertex;
 	//read_sMaterial gRead_materialData;
 	//read_sLight gRead_lightData;
