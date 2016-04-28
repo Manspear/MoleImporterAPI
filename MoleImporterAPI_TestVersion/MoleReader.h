@@ -163,7 +163,7 @@ private:
 	std::vector< read_sMaterial> pmRead_materialList;
 	std::vector<read_m> pmRead_mList;
 	std::vector<read_mk> gRead_mkList;
-	std::vector<read_sJoint> gRead_jointList;
+	std::vector<read_sJoint> pmRead_jointList;
 	std::vector<read_sKeyFrame> gRead_KeyList;
 	std::vector<read_sAnimationState> gRead_animStateList;
 	
