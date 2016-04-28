@@ -146,6 +146,7 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MoleImporterHeaders.h" />
     <ClInclude Include="MoleReader.h" />
     <ClInclude Include="junk.h" />
     <ClInclude Include="ReadHeaderData.h" />

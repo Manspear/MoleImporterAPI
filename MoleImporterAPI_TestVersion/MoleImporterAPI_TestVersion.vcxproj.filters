@@ -32,5 +32,8 @@
     <ClInclude Include="ReadHeaderData.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="MoleImporterHeaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

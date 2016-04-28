@@ -1,54 +1,128 @@
-#pragma once
-//cout << "Mesh: " << i << endl;
+//#pragma once
+//#include <vector>
 //
-//infile.read((char*)&read_meshList[i], sizeof(read_sMesh));//													Information av hur många vertices som senare kommer att komma, och efter det hur många skelAnim verticear som kommer komma osv, samt hur mycket minne den inten som berättar detta tar upp(reservation för vår header).En int kommer först, den har värdet 100.  Och den inten kommer ta upp 4 bytes.
+//struct read_sMainHeader
+//{
+//	unsigned int meshCount;
+//	unsigned int materialCount;
+//	unsigned int lightCount;
+//	unsigned int cameraCount;
+//};
 //
-//cout << "Mesh vector: " << endl;
+//struct  read_sVertex
+//{
+//	float vertexPos[3];
+//	float vertexNormal[3];
+//	float vertexUV[2];
+//	float tangentNormal[3];
+//	float biTangentNormal[3];
+//};
 //
-//cout << "\t";
-//cout << "xyz: ";
-//cout << read_meshList[i].translate[0];
-//cout << read_meshList[i].translate[1];
-//cout << read_meshList[i].translate[2] << endl;
+//struct  read_sMesh
+//{
+//	char meshName[256];
 //
-//cout << "\t";
-//cout << "rot: ";
-//cout << read_meshList[i].rotation[0];
-//cout << read_meshList[i].rotation[1];
-//cout << read_meshList[i].rotation[2] << endl;
+//	unsigned int materialID;
 //
-//cout << "\t";
-//cout << "scale: ";
-//cout << read_meshList[i].scale[0];
-//cout << read_meshList[i].scale[1];
-//cout << read_meshList[i].scale[2] << endl;
+//	float translate[3];
+//	float rotation[3];
+//	float scale[3];
 //
-//cout << "\t";
-//cout << "Vertex Count: ";
-//cout << read_meshList[i].vertexCount << endl;
-////cout << "SkelAnimVert Count: 0" << endl;
-////cout << "Joint Count: 0"  << endl;
+//	bool isBoundingBox;
+//	bool isAnimated;
 //
-//cout << "\t";
-//cout << "Material ID: ";
-//cout << read_meshList[i].materialID << endl;
-////detta är storleken av innehållet i vList.data()
+//	unsigned int vertexCount;
+//	unsigned int skelAnimVertexCount;
+//	unsigned int jointCount;
+//};
 //
-//cout << "\n";
-//cout << "Vertex vector: " << endl;
+///**
+//This struct is used to be "parallell" to the
+//mesh struct. They are connected implicitly.
+//**/
+//struct  read_m
+//{
+//	std::vector< read_sVertex> vList;
+//};
 //
-//cout << "mlist: " << endl;
-//read_mList[i].vList.resize(read_meshList[i].vertexCount);
-//cout << "\t";
-//cout << read_mList[i].vList.data() << endl;
+//struct  read_sSkelAnimVertex
+//{
+//	float vertexPos[3];
+//	float vertexNormal[3];
+//	float vertexUV[2];
+//	float tangentNormal[3];
+//	float biTangentNormal[3];
+//	float influences[4];
+//	float weights[4];
+//};
 //
-//cout << "\t";
-//cout << "Allocated memory for " << read_meshList[i].vertexCount << " vertices" << endl;
+//struct read_mk
+//{
+//	std::vector<read_sSkelAnimVertex> vskList;
+//};
 //
+//struct read_sJoint
+//{
+//	int jointID;
+//	int parentJointID;
+//	int bBoxID;
 //
-//read_mList[i].vList.resize(read_meshList[i].vertexCount);
+//	float pos[3];
+//	float rot[3];
+//	float scale[3];
 //
-//infile.read((char*)read_mList[i].vList.data(), sizeof(read_sVertex) * read_meshList[i].vertexCount);//				Skriver ut alla vertices i får vArray, pos, nor, rgba 100 gånger. Och minnet 100 Vertices tar upp.
+//	float bindPoseInverse[16];
+//	float globalBindPoseInverse[16];
 //
-//																									//cout << "SkelAnimVert vector: NULL" << endl;
+//	int animationStateCount;
+//};
 //
+//struct read_sAnimationState
+//{
+//	int keyFrames;
+//};
+//
+//struct read_sKeyFrame
+//{
+//	float keyTime;
+//	float keyPos[3];
+//	float keyRotate[3];
+//	float keyScale[3];
+//};
+//
+//struct  read_sMaterial
+//{
+//	char materialName[256];
+//
+//	float ambientColor[3];
+//	float diffuseColor[3];
+//	float specularColor[3];
+//
+//	float shinyFactor;
+//
+//	char diffuseTexture[256];
+//	char specularTexture[256];
+//	char normalTexture[256];
+//};
+//
+//struct  read_sLight
+//{
+//	int lightID;
+//
+//	float lightPos[3];
+//	float lightRot[3];
+//	float lightScale[3];
+//
+//	float color[3];
+//	float intensity;
+//};
+//
+//struct  read_sCamera
+//{
+//	float camPos[3];
+//	float upVector[3];
+//
+//	float fieldOfView;
+//	float nearPlane;
+//	float farPlane;
+//};

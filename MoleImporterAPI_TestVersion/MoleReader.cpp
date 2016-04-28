@@ -34,8 +34,10 @@ void MoleReader::readFromBinary(const char* filePath)
 	if (pmRead_mainHeader.meshCount >= 1)
 	{
 		pmRead_meshList.resize(pmRead_mainHeader.meshCount + prevMeshes);
+		pmRead_meshJointHolder.resize(pmRead_mainHeader.meshCount + prevMeshes);
 		pmRead_mList.resize(pmRead_mainHeader.meshCount + prevMeshes);
-		gRead_mkList.resize(pmRead_mainHeader.meshCount + prevMeshes);
+		pmRead_mkList.resize(pmRead_mainHeader.meshCount + prevMeshes);
+		pmRead_meshChildList.resize(pmRead_mainHeader.meshCount + prevMeshes);
 
 		for (int i = 0; i < pmRead_mainHeader.meshCount; i++)
 		{
@@ -48,88 +50,118 @@ void MoleReader::readFromBinary(const char* filePath)
 			infile.read((char*)&pmRead_meshList[i + prevMeshes], sizeof(read_sMesh));
 
 			int currMeshIndex = i + prevMeshes;
-
-			cout << "Mesh: " << currMeshIndex << endl;
-
-			cout << "Name: " << pmRead_meshList[currMeshIndex].meshName << endl;
-
-			cout << "\t";
-			cout << "Material ID: ";
-			cout << pmRead_meshList[currMeshIndex].materialID << endl;
-
-			cout << "Mesh vector: " << endl;
-
-			cout << "\t";
-			cout << "xyz: ";
-			cout << pmRead_meshList[currMeshIndex].translate[0] << " ";
-			cout << pmRead_meshList[currMeshIndex].translate[1] << " ";
-			cout << pmRead_meshList[currMeshIndex].translate[2] << " " << endl;
-
-			cout << "\t";
-			cout << "rot: ";
-			cout << pmRead_meshList[currMeshIndex].rotation[0] << " ";
-			cout << pmRead_meshList[currMeshIndex].rotation[1] << " ";
-			cout << pmRead_meshList[currMeshIndex].rotation[2] << " " << endl;
-
-			cout << "\t";
-			cout << "scale: ";
-			cout << pmRead_meshList[currMeshIndex].scale[0] << " ";
-			cout << pmRead_meshList[currMeshIndex].scale[1] << " ";
-			cout << pmRead_meshList[currMeshIndex].scale[2] << " " << endl;
-
-			cout << "\t";
-			cout << "Vertex Count: ";
-			cout << pmRead_meshList[currMeshIndex].vertexCount << endl;
-
-			cout << "\t";
-			cout << "SkelAnimVert Count: ";
-			cout << pmRead_meshList[i].skelAnimVertexCount << endl;
-
-			cout << "\t";
-			cout << "Joint Count: ";
-			cout << pmRead_meshList[i].jointCount << endl;
-			
-			if (pmRead_meshList[i].isAnimated == true)
 			{
-				cout << "\n";
-				cout << "Skeleton Vertex vector: " << endl;
+				cout << "Mesh: " << currMeshIndex << endl;
 
-				cout << "mkList: " << endl;
-				gRead_mkList[i].vskList.resize(pmRead_meshList[currMeshIndex].skelAnimVertexCount);
-				cout << "\t";
-				cout << gRead_mkList[i].vskList.data();
+				cout << "Name: " << pmRead_meshList[currMeshIndex].meshName << endl;
 
 				cout << "\t";
-				cout << "Allocated memory for: " << pmRead_meshList[i].skelAnimVertexCount << " skel vertices" << endl << endl;
+				cout << "Material ID: ";
+				cout << pmRead_meshList[currMeshIndex].materialID << endl;
 
+				cout << "Mesh vector: " << endl;
+
+				cout << "\t";
+				cout << "xyz: ";
+				cout << pmRead_meshList[currMeshIndex].translate[0] << " ";
+				cout << pmRead_meshList[currMeshIndex].translate[1] << " ";
+				cout << pmRead_meshList[currMeshIndex].translate[2] << " " << endl;
+
+				cout << "\t";
+				cout << "rot: ";
+				cout << pmRead_meshList[currMeshIndex].rotation[0] << " ";
+				cout << pmRead_meshList[currMeshIndex].rotation[1] << " ";
+				cout << pmRead_meshList[currMeshIndex].rotation[2] << " " << endl;
+
+				cout << "\t";
+				cout << "scale: ";
+				cout << pmRead_meshList[currMeshIndex].scale[0] << " ";
+				cout << pmRead_meshList[currMeshIndex].scale[1] << " ";
+				cout << pmRead_meshList[currMeshIndex].scale[2] << " " << endl;
+
+				cout << "\t";
+				cout << "Vertex Count: ";
+				cout << pmRead_meshList[currMeshIndex].vertexCount << endl;
+
+				cout << "\t";
+				cout << "SkelAnimVert Count: ";
+				cout << pmRead_meshList[currMeshIndex].skelAnimVertexCount << endl;
+
+				cout << "\t";
+				cout << "Joint Count: ";
+				cout << pmRead_meshList[currMeshIndex].jointCount << endl;
+			}
+
+
+			if (pmRead_meshList[currMeshIndex].isAnimated == true)
+			{
+				{
+					cout << "\n";
+					cout << "Skeleton Vertex vector: " << endl;
+
+					cout << "mkList: " << endl;
+					pmRead_mkList[currMeshIndex].vskList.resize(pmRead_meshList[currMeshIndex].skelAnimVertexCount);
+					cout << "\t";
+					cout << pmRead_mkList[currMeshIndex].vskList.data();
+
+					cout << "\t";
+					cout << "Allocated memory for: " << pmRead_meshList[i].skelAnimVertexCount << " skel vertices" << endl << endl;
+				}
+				const int jointCount = pmRead_meshList[currMeshIndex].jointCount;
 				/*Reading all the vertex lists for each mesh. For example if a mesh have 200 vertices,
 				we can multiply the count of vertices with the sizes in bytes that the sVertex struct have.
 				This means that we will be reading the pos, nor, uv, tan, bitan 200 times.*/
-				infile.read((char*)gRead_mkList[i].vskList.data(), sizeof(read_sSkelAnimVertex) * pmRead_meshList[i].skelAnimVertexCount);
+				infile.read((char*)pmRead_mkList[currMeshIndex].vskList.data(), sizeof(read_sSkelAnimVertex) * pmRead_meshList[currMeshIndex].skelAnimVertexCount);
 
 				/*Reading the joint list for each mesh. Every joint in the list have individual data
 				that we have to process when reading from the file.*/
-				pmRead_jointList.resize(pmRead_meshList[i].jointCount);
-				cout << "\n";
-				cout << "Joint vector: " << endl;
-
-				cout << "\t";
-				cout << pmRead_jointList.data() << endl;
-
-				cout << "\t";
-				cout << "Allocated memory for: " << pmRead_meshList[i].jointCount << " joints" << endl;
+				pmRead_meshJointHolder[currMeshIndex].jointList.resize(jointCount);
+				pmRead_meshJointHolder[currMeshIndex].perJoint.resize(jointCount);
 				
+				{ 
+					cout << "\n";
+					cout << "Joint vector: " << endl;
+
+					cout << "\t";
+				//	cout << pmRead_jointList.data() << endl;
+
+					cout << "\t";
+					cout << "Allocated memory for: " << pmRead_meshList[currMeshIndex].jointCount << " joints" << endl;
+				}
 				/*Reading the data for all the joints that a skinned mesh have.*/
-				infile.read((char*)pmRead_jointList.data(), sizeof(read_sJoint) * pmRead_meshList[i].jointCount);
+				
+				infile.read((char*)pmRead_meshJointHolder[currMeshIndex].jointList.data(), sizeof(read_sJoint) * jointCount);
+		
+				for (int jointCounter = 0; jointCounter < jointCount; jointCounter++)
+				{
+					//pmRead_meshJointHolder[currMeshIndex].perJoint[jointCounter].meshChildren.resize()
+					const int animStateCount = pmRead_meshJointHolder[currMeshIndex].jointList[jointCounter].animationStateCount;
+					pmRead_meshJointHolder[currMeshIndex].perJoint[jointCounter].animationStateTracker.resize(animStateCount);
+
+					infile.read((char*)pmRead_meshJointHolder[currMeshIndex].perJoint[jointCounter].animationStateTracker.data(), sizeof(read_sAnimationStateTracker) * animStateCount);
+
+					const int meshChildCount = pmRead_meshJointHolder[currMeshIndex].jointList[jointCounter].meshChildCount;
+					//here crash
+					infile.read((char*)pmRead_meshJointHolder[currMeshIndex].perJoint[jointCounter].meshChildren.data(), sizeof(int) * meshChildCount);
+					
+					pmRead_meshJointHolder[currMeshIndex].perJoint[jointCounter].animationStates.resize(animStateCount);
+
+					for (int animStateCounter = 0; animStateCounter < animStateCount; animStateCounter++)
+					{
+						const int keyCount = pmRead_meshJointHolder[currMeshIndex].perJoint[jointCounter].animationStateTracker[animStateCounter].keyCount;
+						pmRead_meshJointHolder[currMeshIndex].perJoint[jointCounter].animationStates[animStateCounter].keyFrames.resize(keyCount);
+
+						infile.read((char*)pmRead_meshJointHolder[currMeshIndex].perJoint[jointCounter].animationStates[animStateCounter].keyFrames.data(), sizeof(read_sKeyFrame) * keyCount);
+					}
+				}
 			}
 
 			else
 			{
+				pmRead_mList[currMeshIndex].vList.resize(pmRead_meshList[currMeshIndex].vertexCount);
 				cout << "\n";
 				cout << "Vertex vector: " << endl;
-
 				cout << "mList: " << endl;
-				pmRead_mList[currMeshIndex].vList.resize(pmRead_meshList[currMeshIndex].vertexCount);
 				cout << "\t";
 				cout << pmRead_mList[currMeshIndex].vList.data() << endl;
 
@@ -143,6 +175,10 @@ void MoleReader::readFromBinary(const char* filePath)
 				This means that we will be reading the pos, nor, uv, tan, bitan 200 times.*/
 				infile.read((char*)pmRead_mList[currMeshIndex].vList.data(), sizeof(read_sVertex) * pmRead_meshList[currMeshIndex].vertexCount);
 			}
+			const int childMeshCount = pmRead_meshList[currMeshIndex].meshChildCount;
+			
+			pmRead_meshChildList[currMeshIndex].meshChildList.resize(childMeshCount);
+			infile.read((char*)pmRead_meshChildList[currMeshIndex].meshChildList.data(), sizeof(read_sMeshChild) * childMeshCount);
 		}
 		prevMeshes += pmRead_mainHeader.meshCount;
 	}
@@ -157,49 +193,50 @@ void MoleReader::readFromBinary(const char* filePath)
 
 			/*Reading all the materials from the list with the size in bytes in mind.*/
 			infile.read((char*)&pmRead_materialList[currIndex], sizeof(read_sMaterial));
+			{
+				cout << "Material: " << i << " Name: " << pmRead_materialList[currIndex].materialName << endl;
 
-			cout << "Material: " << i << " Name: " << pmRead_materialList[currIndex].materialName << endl;
+				cout << "Material vector: " << endl;
+				cout << "\t";
+				cout << &pmRead_materialList[currIndex] << endl;
 
-			cout << "Material vector: " << endl;
-			cout << "\t";
-			cout << &pmRead_materialList[currIndex] << endl;
+				cout << "\t";
+				cout << "Allocated memory for " << pmRead_mainHeader.materialCount << " materials" << endl;
 
-			cout << "\t";
-			cout << "Allocated memory for " << pmRead_mainHeader.materialCount << " materials" << endl;
+				cout << "\t";
+				cout << "Ambient color: ";
+				cout << pmRead_materialList[currIndex].ambientColor[0] << " "
+					<< pmRead_materialList[currIndex].ambientColor[1] << " "
+					<< pmRead_materialList[currIndex].ambientColor[2] << " " << endl;
 
-			cout << "\t";
-			cout << "Ambient color: ";
-			cout << pmRead_materialList[currIndex].ambientColor[0] << " "
-				<< pmRead_materialList[currIndex].ambientColor[1] << " "
-				<< pmRead_materialList[currIndex].ambientColor[2] << " " << endl;
+				cout << "\t";
+				cout << "Diffuse color: ";
+				cout << pmRead_materialList[currIndex].diffuseColor[0] << " "
+					<< pmRead_materialList[currIndex].diffuseColor[1] << " "
+					<< pmRead_materialList[currIndex].diffuseColor[2] << " " << endl;
 
-			cout << "\t";
-			cout << "Diffuse color: ";
-			cout << pmRead_materialList[currIndex].diffuseColor[0] << " "
-				<< pmRead_materialList[currIndex].diffuseColor[1] << " "
-				<< pmRead_materialList[currIndex].diffuseColor[2] << " " << endl;
+				cout << "\t";
+				cout << "Specular color: ";
+				cout << pmRead_materialList[currIndex].specularColor[0] << " "
+					<< pmRead_materialList[currIndex].specularColor[1] << " "
+					<< pmRead_materialList[currIndex].specularColor[2] << " " << endl;
 
-			cout << "\t";
-			cout << "Specular color: ";
-			cout << pmRead_materialList[currIndex].specularColor[0] << " "
-				<< pmRead_materialList[currIndex].specularColor[1] << " "
-				<< pmRead_materialList[currIndex].specularColor[2] << " " << endl;
+				cout << "\t";
+				cout << "Shiny factor: ";
+				cout << pmRead_materialList[currIndex].shinyFactor << endl;
 
-			cout << "\t";
-			cout << "Shiny factor: ";
-			cout << pmRead_materialList[currIndex].shinyFactor << endl;
+				cout << "\t";
+				cout << "Diffuse texture: " << pmRead_materialList[currIndex].diffuseTexture << endl;
 
-			cout << "\t";
-			cout << "Diffuse texture: " << pmRead_materialList[currIndex].diffuseTexture << endl;
+				cout << "\t";
+				cout << "Specular texture: " << pmRead_materialList[currIndex].specularTexture << endl;
 
-			cout << "\t";
-			cout << "Specular texture: " << pmRead_materialList[currIndex].specularTexture << endl;
-
-			cout << "\t";
-			cout << "Normal texture: " << pmRead_materialList[currIndex].normalTexture << endl;
+				cout << "\t";
+				cout << "Normal texture: " << pmRead_materialList[currIndex].normalTexture << endl;
 
 
-			cout << "______________________" << endl;
+				cout << "______________________" << endl;
+			}
 		}
 
 		prevMaterials += pmRead_mainHeader.materialCount;
@@ -216,44 +253,45 @@ void MoleReader::readFromBinary(const char* filePath)
 
 			/*Reading all the lights from the list with the size in bytes in mind.*/
 			infile.read((char*)&pmRead_lightList[currIndex], sizeof(read_sLight));
+			{
+				cout << "Light: " << i << endl;
 
-			cout << "Light: " << i << endl;
+				cout << "Light vector: " << endl;
 
-			cout << "Light vector: " << endl;
+				cout << "\t";
+				cout << &pmRead_lightList[currIndex] << endl;
 
-			cout << "\t";
-			cout << &pmRead_lightList[currIndex] << endl;
+				cout << "\t";
+				cout << "Allocated memory for " << pmRead_mainHeader.lightCount << " lights" << endl;
 
-			cout << "\t";
-			cout << "Allocated memory for " << pmRead_mainHeader.lightCount << " lights" << endl;
+				cout << "\t";
+				cout << "Light ID: " << pmRead_lightList[currIndex].lightID << endl;
 
-			cout << "\t";
-			cout << "Light ID: " << pmRead_lightList[currIndex].lightID << endl;
+				cout << "\t";
+				cout << "Light position: " << pmRead_lightList[currIndex].lightPos[0] << " "
+					<< pmRead_lightList[currIndex].lightPos[1] << " "
+					<< pmRead_lightList[currIndex].lightPos[2] << endl;
 
-			cout << "\t";
-			cout << "Light position: " << pmRead_lightList[currIndex].lightPos[0] << " "
-				<< pmRead_lightList[currIndex].lightPos[1] << " "
-				<< pmRead_lightList[currIndex].lightPos[2] << endl;
+				cout << "\t";
+				cout << "Light rotation: " << pmRead_lightList[currIndex].lightRot[0] << " "
+					<< pmRead_lightList[currIndex].lightRot[1] << " "
+					<< pmRead_lightList[currIndex].lightRot[2] << endl;
 
-			cout << "\t";
-			cout << "Light rotation: " << pmRead_lightList[currIndex].lightRot[0] << " "
-				<< pmRead_lightList[currIndex].lightRot[1] << " "
-				<< pmRead_lightList[currIndex].lightRot[2] << endl;
+				cout << "\t";
+				cout << "Light scale: " << pmRead_lightList[currIndex].lightScale[0] << " "
+					<< pmRead_lightList[currIndex].lightScale[1] << " "
+					<< pmRead_lightList[currIndex].lightScale[2] << endl;
 
-			cout << "\t";
-			cout << "Light scale: " << pmRead_lightList[currIndex].lightScale[0] << " "
-				<< pmRead_lightList[currIndex].lightScale[1] << " "
-				<< pmRead_lightList[currIndex].lightScale[2] << endl;
+				cout << "\t";
+				cout << "Light color: " << pmRead_lightList[currIndex].color[0] << " "
+					<< pmRead_lightList[currIndex].color[1] << " "
+					<< pmRead_lightList[currIndex].color[2] << " " << endl;
 
-			cout << "\t";
-			cout << "Light color: " << pmRead_lightList[currIndex].color[0] << " "
-				<< pmRead_lightList[currIndex].color[1] << " "
-				<< pmRead_lightList[currIndex].color[2] << " " << endl;
+				cout << "\t";
+				cout << "Light intensity: " << pmRead_lightList[currIndex].intensity << endl;
 
-			cout << "\t";
-			cout << "Light intensity: " << pmRead_lightList[currIndex].intensity << endl;
-
-			cout << "______________________" << endl;
+				cout << "______________________" << endl;
+			}
 		}
 		prevLights = pmRead_mainHeader.lightCount;
 	}
@@ -268,37 +306,38 @@ void MoleReader::readFromBinary(const char* filePath)
 
 			/*Reading all the cameras from the list with the size in bytes in mind.*/
 			infile.read((char*)&pmRead_cameraList[currIndex], sizeof(read_sCamera));
+			{
+				cout << "Camera: " << i << endl;
 
-			cout << "Camera: " << i << endl;
+				cout << "Camera vector: " << endl;
 
-			cout << "Camera vector: " << endl;
+				cout << "\t";
+				cout << &pmRead_cameraList[currIndex] << endl;
 
-			cout << "\t";
-			cout << &pmRead_cameraList[currIndex] << endl;
+				cout << "\t";
+				cout << "Allocated memory for " << pmRead_mainHeader.cameraCount << " cameras" << endl;
 
-			cout << "\t";
-			cout << "Allocated memory for " << pmRead_mainHeader.cameraCount << " cameras" << endl;
+				cout << "\t";
+				cout << "Camera position: " << pmRead_cameraList[currIndex].camPos[0] << " "
+					<< pmRead_cameraList[currIndex].camPos[1] << " "
+					<< pmRead_cameraList[currIndex].camPos[2] << endl;
 
-			cout << "\t";
-			cout << "Camera position: " << pmRead_cameraList[currIndex].camPos[0] << " "
-				<< pmRead_cameraList[currIndex].camPos[1] << " "
-				<< pmRead_cameraList[currIndex].camPos[2] << endl;
+				cout << "\t";
+				cout << "Camera Up vector: " << pmRead_cameraList[currIndex].upVector[0] << " "
+					<< pmRead_cameraList[currIndex].upVector[1] << " "
+					<< pmRead_cameraList[currIndex].upVector[2] << endl;
 
-			cout << "\t";
-			cout << "Camera Up vector: " << pmRead_cameraList[currIndex].upVector[0] << " "
-				<< pmRead_cameraList[currIndex].upVector[1] << " "
-				<< pmRead_cameraList[currIndex].upVector[2] << endl;
+				cout << "\t";
+				cout << "FOV: " << pmRead_cameraList[currIndex].fieldOfView << endl;
 
-			cout << "\t";
-			cout << "FOV: " << pmRead_cameraList[currIndex].fieldOfView << endl;
+				cout << "\t";
+				cout << "Near plane: " << pmRead_cameraList[currIndex].nearPlane << endl;
 
-			cout << "\t";
-			cout << "Near plane: " << pmRead_cameraList[currIndex].nearPlane << endl;
+				cout << "\t";
+				cout << "Far plane: " << pmRead_cameraList[currIndex].farPlane << endl;
 
-			cout << "\t";
-			cout << "Far plane: " << pmRead_cameraList[currIndex].farPlane << endl;
-
-			cout << "______________________" << endl;
+				cout << "______________________" << endl;
+			}
 		}
 		prevCameras += pmRead_mainHeader.cameraCount;
 	}
@@ -306,6 +345,12 @@ void MoleReader::readFromBinary(const char* filePath)
 	pmRead_meshList;
 	//Contains the vertices for each mesh
 	pmRead_mList;
+	//contains skeletal vertices for each mesh
+	pmRead_mkList;
+	//contains mesh children for each mesh
+	pmRead_meshChildList;
+	//Contains joint and animLayer-data
+	pmRead_meshJointHolder;
 	//contains the cameras
 	pmRead_cameraList;
 	//contains the lights
@@ -316,6 +361,7 @@ void MoleReader::readFromBinary(const char* filePath)
 	infile.close();
 }
 
+/*
 const std::vector<MoleReader::read_sMesh>* MoleReader::getMeshList()
 {
 	return &pmRead_meshList;
@@ -340,6 +386,8 @@ const std::vector<MoleReader::read_sLight>* MoleReader::getLightList()
 {
 	return &pmRead_lightList;
 }
+
+*/
 
 MoleReader::MoleReader()
 {
