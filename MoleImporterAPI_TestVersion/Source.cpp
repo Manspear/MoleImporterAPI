@@ -6,11 +6,20 @@ int main()
 {
 	MoleReader wololo;
 	wololo.readFromBinary("testBox.mole");
+	
 
 	const std::vector<MoleReader::read_sMesh>* myMeshList = wololo.getMeshList();
-	
+	const std::vector<MoleReader::read_sMaterial>* myMaterialList = wololo.getMaterialList();
+	const std::vector<MoleReader::read_m>* myVertexList = wololo.getVertexList();
+	const std::vector<MoleReader::read_sCamera>* myCameraList = wololo.getCameraList();
+	const std::vector<MoleReader::read_sLight>* myLightList = wololo.getLightList();
+
+	wololo.readFromBinary("testBox.mole");
+
 	myMeshList[0][0].isAnimated;
 	
+	MoleReader::read_sVertex v = myVertexList[0][0].vList.data()[0];
+
 	if (myMeshList[0][0].isAnimated == false) {
 		cout << "I am Kyle" << endl;
 	}
