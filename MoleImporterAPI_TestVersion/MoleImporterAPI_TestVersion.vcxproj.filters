@@ -23,14 +23,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ReadHeaderData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="junk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MoleReader.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReadHeaderData.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

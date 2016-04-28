@@ -8,14 +8,20 @@ using namespace std;
 
 void MoleReader::readFromBinary(const char* filePath)
 {
-	//Read from binary
-	std::ifstream infile(filePath, std::ifstream::binary);//		Öppnar filen vi nyss skapade men ska nu läsa istället
+	/*Reading the binary file that we just have been written to.*/
+
+	std::ifstream infile(filePath, std::ifstream::binary);
 
 	cout << ">>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<" << "\n" << "\n" << endl;
 	cout << "Binary Reader" << endl;
 	cout << "\n" << endl;
 
-	infile.read((char*)&gRead_mainHeader, sizeof(read_sMainHeader));//				Information av hur många meshes som senare kommer att komma, och efter det hur många material osv, samt hur mycket minne den inten som berättar detta tar upp (reservation för vår header)
+	/*Reading the first block of memory that is the main header. This will read
+	information about how much of each node type we have from a imported scene and
+	how memory they will take up in the binary file.*/
+
+	infile.read((char*)&gRead_mainHeader, sizeof(read_sMainHeader));
+
 	cout << "______________________" << endl;
 	cout << "Main Header" << endl;
 	cout << "meshCount: " << gRead_mainHeader.meshCount << endl;
@@ -29,9 +35,16 @@ void MoleReader::readFromBinary(const char* filePath)
 	{
 		gRead_meshList.resize(gRead_mainHeader.meshCount + prevMeshes);
 		gRead_mList.resize(gRead_mainHeader.meshCount + prevMeshes);
+		gRead_mkList.resize(gRead_mainHeader.meshCount + prevMeshes);
 
 		for (int i = 0; i < gRead_mainHeader.meshCount; i++)
 		{
+			/*Reading the block of memory that is the meshes. The information from the meshes
+			will be read here, that includes for example vertex count for a normal mesh
+			and a skinned mesh. What we do is reserving memory for all the data that is in the
+			struct. For example, Vertex count is a integer and will take up to 4 bytes in the
+			memory when reading.*/
+
 			infile.read((char*)&gRead_meshList[i + prevMeshes], sizeof(read_sMesh));
 
 			int currMeshIndex = i + prevMeshes;
@@ -40,7 +53,9 @@ void MoleReader::readFromBinary(const char* filePath)
 
 			cout << "Name: " << gRead_meshList[currMeshIndex].meshName << endl;
 
-			//Information av hur många vertices som senare kommer att komma, och efter det hur många skelAnim verticear som kommer komma osv, samt hur mycket minne den inten som berättar detta tar upp(reservation för vår header).En int kommer först, den har värdet 100.  Och den inten kommer ta upp 4 bytes.
+			cout << "\t";
+			cout << "Material ID: ";
+			cout << gRead_meshList[currMeshIndex].materialID << endl;
 
 			cout << "Mesh vector: " << endl;
 
@@ -65,30 +80,69 @@ void MoleReader::readFromBinary(const char* filePath)
 			cout << "\t";
 			cout << "Vertex Count: ";
 			cout << gRead_meshList[currMeshIndex].vertexCount << endl;
-			//cout << "SkelAnimVert Count: 0" << endl;
-			//cout << "Joint Count: 0"  << endl;
 
 			cout << "\t";
-			cout << "Material ID: ";
-			cout << gRead_meshList[currMeshIndex].materialID << endl;
-			//												detta är storleken av innehållet i vList.data()
-
-			cout << "\n";
-			cout << "Vertex vector: " << endl;
-
-			cout << "mlist: " << endl;
-			gRead_mList[currMeshIndex].vList.resize(gRead_meshList[currMeshIndex].vertexCount);
-			cout << "\t";
-			cout << gRead_mList[currMeshIndex].vList.data() << endl;
+			cout << "SkelAnimVert Count: ";
+			cout << gRead_meshList[i].skelAnimVertexCount << endl;
 
 			cout << "\t";
-			cout << "Allocated memory for " << gRead_meshList[currMeshIndex].vertexCount << " vertices" << endl;
+			cout << "Joint Count: ";
+			cout << gRead_meshList[i].jointCount << endl;
+			
+			if (gRead_meshList[i].isAnimated == true)
+			{
+				cout << "\n";
+				cout << "Skeleton Vertex vector: " << endl;
 
-			gRead_mList[currMeshIndex].vList.resize(gRead_meshList[currMeshIndex].vertexCount);
+				cout << "mkList: " << endl;
+				gRead_mkList[i].vskList.resize(gRead_meshList[currMeshIndex].skelAnimVertexCount);
+				cout << "\t";
+				cout << gRead_mkList[i].vskList.data();
 
-			infile.read((char*)gRead_mList[currMeshIndex].vList.data(), sizeof(read_sVertex) * gRead_meshList[currMeshIndex].vertexCount);//				Skriver ut alla vertices i får vArray, pos, nor, rgba 100 gånger. Och minnet 100 Vertices tar upp.
+				cout << "\t";
+				cout << "Allocated memory for: " << gRead_meshList[i].skelAnimVertexCount << " skel vertices" << endl << endl;
 
-																												//cout << "SkelAnimVert vector: NULL" << endl;																									//cout << "Joint vector: NULL" << endl;
+				/*Reading all the vertex lists for each mesh. For example if a mesh have 200 vertices,
+				we can multiply the count of vertices with the sizes in bytes that the sVertex struct have.
+				This means that we will be reading the pos, nor, uv, tan, bitan 200 times.*/
+				infile.read((char*)gRead_mkList[i].vskList.data(), sizeof(read_sSkelAnimVertex) * gRead_meshList[i].skelAnimVertexCount);
+
+				/*Reading the joint list for each mesh. Every joint in the list have individual data
+				that we have to process when reading from the file.*/
+				gRead_jointList.resize(gRead_meshList[i].jointCount);
+				cout << "\n";
+				cout << "Joint vector: " << endl;
+
+				cout << "\t";
+				cout << gRead_jointList.data() << endl;
+
+				cout << "\t";
+				cout << "Allocated memory for: " << gRead_meshList[i].jointCount << " joints" << endl;
+				
+				/*Reading the data for all the joints that a skinned mesh have.*/
+				infile.read((char*)gRead_jointList.data(), sizeof(read_sJoint) * gRead_meshList[i].jointCount);
+			}
+
+			else
+			{
+				cout << "\n";
+				cout << "Vertex vector: " << endl;
+
+				cout << "mList: " << endl;
+				gRead_mList[currMeshIndex].vList.resize(gRead_meshList[currMeshIndex].vertexCount);
+				cout << "\t";
+				cout << gRead_mList[currMeshIndex].vList.data() << endl;
+
+				cout << "\t";
+				cout << "Allocated memory for " << gRead_meshList[currMeshIndex].vertexCount << " vertices" << endl << endl;
+
+				gRead_mList[currMeshIndex].vList.resize(gRead_meshList[currMeshIndex].vertexCount);
+
+				/*Reading all the vertex lists for each mesh. For example if a mesh have 200 vertices,
+				we can multiply the count of vertices with the sizes in bytes that the sVertex struct have.
+				This means that we will be reading the pos, nor, uv, tan, bitan 200 times.*/
+				infile.read((char*)gRead_mList[currMeshIndex].vList.data(), sizeof(read_sVertex) * gRead_meshList[currMeshIndex].vertexCount);
+			}
 		}
 		prevMeshes += gRead_mainHeader.meshCount;
 	}
@@ -101,12 +155,12 @@ void MoleReader::readFromBinary(const char* filePath)
 		{
 			int currIndex = i + prevMaterials;
 
-			infile.read((char*)&gRead_materialList[currIndex], sizeof(read_sMaterial)); //Information av hur många material som senare kommer att komma, samt hur mycket minne den inten som berättar detta tar upp.
+			/*Reading all the materials from the list with the size in bytes in mind.*/
+			infile.read((char*)&gRead_materialList[currIndex], sizeof(read_sMaterial)); 
 
 			cout << "Material: " << i << " Name: " << gRead_materialList[currIndex].materialName << endl;
 
 			cout << "Material vector: " << endl;
-
 			cout << "\t";
 			cout << &gRead_materialList[currIndex] << endl;
 
@@ -159,6 +213,8 @@ void MoleReader::readFromBinary(const char* filePath)
 		for (int i = 0; i < gRead_mainHeader.lightCount; i++)
 		{
 			int currIndex = i + prevLights;
+
+			/*Reading all the lights from the list with the size in bytes in mind.*/
 			infile.read((char*)&gRead_lightList[currIndex], sizeof(read_sLight));
 
 			cout << "Light: " << i << endl;
@@ -209,7 +265,10 @@ void MoleReader::readFromBinary(const char* filePath)
 		for (int i = 0; i < gRead_mainHeader.cameraCount; i++)
 		{
 			int currIndex = i + prevCameras;
+
+			/*Reading all the cameras from the list with the size in bytes in mind.*/
 			infile.read((char*)&gRead_cameraList[currIndex], sizeof(read_sCamera));
+
 			cout << "Camera: " << i << endl;
 
 			cout << "Camera vector: " << endl;

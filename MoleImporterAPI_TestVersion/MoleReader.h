@@ -34,13 +34,13 @@ public :
 		bool isAnimated;
 
 		unsigned int vertexCount;
-		//unsigned int skelAnimVertexCount;
-		//unsigned int jointCount;
+		unsigned int skelAnimVertexCount;
+		unsigned int jointCount;
 
 	};
 
 	/**
-	This struct is used to be "paralell" to the
+	This struct is used to be "parallell" to the
 	mesh struct. They are connected implicitly.
 	**/
 	struct  read_m
@@ -57,6 +57,40 @@ public :
 		float biTangentNormal[3];
 		float influences[4];
 		float weights[4];
+	};
+
+	struct read_mk
+	{
+		std::vector<read_sSkelAnimVertex> vskList;
+	};
+
+	struct read_sJoint
+	{
+		int jointID;
+		int parentJointID;
+		int bBoxID;
+
+		float pos[3];
+		float rot[3];
+		float scale[3];
+
+		float bindPoseInverse[16];
+		float globalBindPoseInverse[16];
+
+		int animationStateCount;
+	};
+
+	struct read_sAnimationState
+	{
+		int keyFrames;
+	};
+
+	struct read_sKeyFrame
+	{
+		float keyTime;
+		float keyPos[3];
+		float keyRotate[3];
+		float keyScale[3];
 	};
 
 	struct  read_sMaterial
@@ -85,8 +119,6 @@ public :
 		float color[3];
 		float intensity;
 	};
-
-
 
 	struct  read_sCamera
 	{
@@ -118,6 +150,8 @@ private:
 	int prevCameras;
 	int prevLights;
 	int prevMaterials;
+	int prevJoints;
+
 
 	//Vectors holding all of the data.
 	std::vector<read_sMesh> gRead_meshList;
@@ -125,6 +159,10 @@ private:
 	std::vector<read_sLight> gRead_lightList;
 	std::vector< read_sMaterial> gRead_materialList;
 	std::vector<read_m> gRead_mList;
+	std::vector<read_mk> gRead_mkList;
+	std::vector<read_sJoint> gRead_jointList;
+	std::vector<read_sKeyFrame> gRead_KeyList;
+	std::vector<read_sAnimationState> gRead_animStateList;
 	
 
 	//Struct objects

@@ -41,7 +41,7 @@ struct  read_sMesh
 This struct is used to be "paralell" to the
 mesh struct. They are connected implicitly.
 **/
-struct  read_m
+struct read_m
 {
 std::vector< read_sVertex> vList;
 };
@@ -83,8 +83,6 @@ struct  read_sLight
 	float color[3];
 	float intensity;
 };
-
-
 
 struct  read_sCamera
 {
