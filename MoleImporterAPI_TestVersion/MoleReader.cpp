@@ -34,10 +34,15 @@ void MoleReader::readFromBinary(const char* filePath)
 	if (pmRead_mainHeader.meshCount >= 1)
 	{
 		pmRead_meshList.resize(pmRead_mainHeader.meshCount + prevMeshes);
+
+		//Reize to be the same length as the mesh list. Must be this way to work "in parallell" 
+		//with the mesh list
 		pmRead_meshJointHolder.resize(pmRead_mainHeader.meshCount + prevMeshes);
+		pmRead_meshChildList.resize(pmRead_mainHeader.meshCount + prevMeshes);
+
+		//The vertex lists will be filled so that they are the same length as the mesh list.
 		pmRead_mList.resize(pmRead_mainHeader.meshCount + prevMeshes);
 		pmRead_mkList.resize(pmRead_mainHeader.meshCount + prevMeshes);
-		pmRead_meshChildList.resize(pmRead_mainHeader.meshCount + prevMeshes);
 
 		for (int i = 0; i < pmRead_mainHeader.meshCount; i++)
 		{
@@ -361,45 +366,125 @@ void MoleReader::readFromBinary(const char* filePath)
 	infile.close();
 }
 
-/*
-const std::vector<MoleReader::read_sMesh>* MoleReader::getMeshList()
+//const std::vector<read_sMesh>* MoleReader::getMeshList()
+//{
+//	return nullptr;
+//}
+
+
+
+const std::vector<read_sMesh>* MoleReader::getMeshList()
 {
 	return &pmRead_meshList;
 }
 
-const std::vector<MoleReader::read_m>* MoleReader::getVertexList()
+const std::vector<read_sMChildHolder>* MoleReader::getMeshChildList()
 {
-	return &pmRead_mList;
+	return &pmRead_meshChildList;
 }
 
-const std::vector<MoleReader::read_sMaterial>* MoleReader::getMaterialList()
+//const std::vector<read_m>* MoleReader::getVertexList()
+//{
+//	return &pmRead_mList;
+//}
+//
+//const std::vector<read_mk>* MoleReader::getSkeletalVertexList()
+//{
+//	return &pmRead_mkList;
+//}
+
+const std::vector<read_sMaterial>* MoleReader::getMaterialList()
 {
 	return &pmRead_materialList;
 }
 
-const std::vector<MoleReader::read_sCamera>* MoleReader::getCameraList()
+const std::vector<read_sCamera>* MoleReader::getCameraList()
 {
 	return &pmRead_cameraList;
 }
 
-const std::vector<MoleReader::read_sLight>* MoleReader::getLightList()
+const std::vector<read_sLight>* MoleReader::getLightList()
 {
 	return &pmRead_lightList;
 }
 
-*/
+const std::vector<read_sMJHolder>* MoleReader::getJointKeyList()
+{
+	return &pmRead_meshJointHolder;
+}
 
-MoleReader::MoleReader()
+const read_sMainHeader * MoleReader::getMainHeader()
+{
+	return &pmRead_mainHeader;
+}
+
+const int MoleReader::getMeshIndex(string meshName)
+{
+	for (int meshIndex = 0; meshIndex < pmRead_mainHeader.meshCount; meshIndex++)
+	{
+		int check = meshName.compare(pmRead_meshList[meshIndex].meshName);
+		if (check == 0)
+		{
+			return meshIndex;
+		}
+	}
+	return -1337;
+}
+
+const read_sMesh * MoleReader::getMesh(int meshIndex)
+{
+	return &pmRead_meshList[meshIndex];
+}
+
+const std::vector<read_sKeyFrame>* MoleReader::getKeyList(int meshIndex, int jointIndex, int animationState)
+{
+	
+	return &pmRead_meshJointHolder[meshIndex].perJoint[jointIndex].animationStates[animationState].keyFrames;
+}
+
+const std::vector<read_sMeshChild>* MoleReader::getMeshChildList(int meshIndex)
+{
+	return &pmRead_meshChildList[meshIndex].meshChildList;
+}
+
+const read_sMaterial * MoleReader::getMaterial(int materialIndex)
+{
+	return &pmRead_materialList[materialIndex];
+}
+
+const read_sJoint * MoleReader::getJoint(int meshIndex, int jointIndex)
+{
+	return &pmRead_meshJointHolder[meshIndex].jointList[jointIndex];
+}
+
+const std::vector<read_sMeshChild> MoleReader::getJointMeshChildList(int meshIndex, int jointIndex)
+{	
+	return pmRead_meshJointHolder[jointIndex].perJoint[jointIndex].meshChildren;
+}
+
+const std::vector<read_sSkelAnimVertex>* MoleReader::getSkelVertexList(int meshIndex)
+{
+	return &pmRead_mkList[meshIndex].vskList;
+}
+
+const std::vector<read_sVertex>* MoleReader::getVertexList(int meshIndex)
+{
+	return &pmRead_mList[meshIndex].vList;
+}
+
+MoleReader::MoleReader() 
 {
 	prevMeshes = 0;
 	prevCameras = 0;
 	prevLights = 0;
 	prevMaterials = 0;
+	prevJoints = 0;
 }
-
 MoleReader::~MoleReader()
 {
+
 }
+
 
 //cout << "______________________" << endl;
 //GLuint vertexBuff;

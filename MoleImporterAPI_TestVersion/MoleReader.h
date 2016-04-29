@@ -13,11 +13,91 @@ Things left to be implemented:
 class MoleReader {
 public :
 	void readFromBinary(const char* filePath);
+	/**
+	Gets a vector containing the entire list of meshes.
+	**/
 	const std::vector<read_sMesh>* getMeshList();
-	const std::vector<read_m>* getVertexList();
+	/**
+	Gets a vector containing vectors of mesh-child-indices of meshes.
+	**/
+	const std::vector<read_sMChildHolder>* getMeshChildList();
+	/**
+	Gets a vector containing the entire list of materials.
+	**/
 	const std::vector< read_sMaterial>* getMaterialList();
+	/**
+	Gets a vector containing the entire list of cameras.
+	**/
 	const std::vector<read_sCamera>* getCameraList();
+	/**
+	Gets a vector containing the entire list of lights.
+	**/
 	const std::vector<read_sLight>* getLightList();
+	/**
+	Gets a vector containing vectors of joints and "joint related stuff".
+	Inside the "joint related stuff" are vectors containing meshChildren
+	and animationStates. Animationstates are what separates animations from
+	one another for each joint.
+	**/
+	const std::vector<read_sMJHolder>* getJointKeyList();
+
+	const read_sMainHeader* getMainHeader();
+
+	/**
+	Get the index of the mesh with the queried name. 
+	If no matching mesh is found, -1337 is returned.
+	Use this function sparingly, it's algorithm loops
+	through ALL of the meshi and compare their names.
+	**/
+	const int getMeshIndex(string meshName);
+	/**
+	Gets the mesh at the given meshIndex.
+	Usage of this mesh is neccessary for getting
+	a bunch of mesh-related data.
+	Examples are:
+	JointCount
+	skelVertexCount
+	vertexCount
+	isAnimated
+	**/
+	const read_sMesh* getMesh(int meshIndex);
+	/**
+	Gets the vector containing keyframes for an animationstate in a joint in a mesh. 
+	Animationstates are "groups" that encapsulate keyFrames. Each animationstate represents
+	a different animation. Examples of different animationstates are "walking cycle", 
+	"attack animation", "idle animation" etc. 
+	**/
+	const std::vector<read_sKeyFrame>* getKeyList(int meshIndex, int jointIndex, int animationState);
+	/**
+	Gets the vector containing indexes to meshChildren belonging to a mesh. 
+	**/
+	const std::vector<read_sMeshChild>* getMeshChildList(int meshIndex);
+
+	const read_sMaterial* getMaterial(int materialIndex);
+	/**
+	Only useful if mesh has isAnimated == true
+	**/
+	const read_sJoint* getJoint(int meshIndex, int jointIndex);
+	/**
+	Gets the vector containing indexes to meshChildren belonging to 
+	a joint.
+	**/
+	const std::vector<read_sMeshChild> getJointMeshChildList(int meshIndex, int jointIndex);
+	/**
+	Gets the vector containing skeletal vertices belonging to a mesh.
+	What separates a skeletal vertex from a regular vertex is that a 
+	skeletal vertex has influences and weights.
+	An influence is an index to the joint affecting the skeletal vertex.
+	A weight is how high of a "percentage" of the joint's transform affects 
+	the skeletal vertex, expressed in numbers between 0 and 1.
+	Our skeletal vertices will have a maximum of 4 influences and 4 weights.
+	The sum of the weights must always be 1, making it "100%".
+	**/
+	const std::vector<read_sSkelAnimVertex>* getSkelVertexList(int meshIndex);
+	/**
+	Gets the vector containing vertices belonging to a mesh.
+	**/
+	const std::vector<read_sVertex>* getVertexList(int meshIndex);
 
 	MoleReader();
 	~MoleReader();

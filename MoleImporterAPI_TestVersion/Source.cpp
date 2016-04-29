@@ -6,6 +6,7 @@ int main()
 {
 	MoleReader wololo;
 	wololo.readFromBinary("testBox2.mole");
+	wololo.readFromBinary("test3.mole");
 	
 
 	/*const std::vector<MoleReader::read_sMesh>* myMeshList = wololo.getMeshList();
