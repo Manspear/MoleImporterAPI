@@ -143,12 +143,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="MoleReader.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Source.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MoleImporterHeaders.h" />
+    <ClInclude Include="MoleImporterHeaders.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="MoleReader.h" />
-    <ClInclude Include="junk.h" />
     <ClInclude Include="ReadHeaderData.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

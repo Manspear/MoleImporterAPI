@@ -23,9 +23,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="junk.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MoleReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
